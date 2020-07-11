@@ -3,7 +3,6 @@
             [clj-http.core :as ch]
             [clj-http.client :as cc]
             [clj-http.conn-mgr :as cm]
-            [clj-uuid :as uuid]
             [clojure.string :as str]
             [clojure.java.io :as io])
   (:gen-class))
@@ -13,8 +12,12 @@
 (defn get-crux-node
   [database]
   (crux/start-node {:crux.node/topology '[crux.standalone/topology
-                                                  crux.kv.lmdb/kv-store]
-                            :crux.kv/db-dir (str (io/file database))}))
+                                          crux.kv.lmdb/kv-store]
+                    :crux.kv/db-dir (str (io/file database "db"))
+                    :crux.standalone/event-log-kv-store 'crux.kv.lmdb/kv
+                    :crux.standalone/event-log-dir (str (io/file database "evt"))
+                    :crux.standalone/event-log-sync? true
+                    :crux.kv/sync? true}))
 
 (defn show-info
   [verbosity min-verbosity text]
@@ -51,19 +54,15 @@
           (recur (first images) (next images))))))
 
 (defn insert-to-database!
-  [node images page verbosity]
+  [query node images page verbosity]
   (show-info verbosity 1 "Inserting images into Crux.")
   (->> images
-       (mapv (fn [r] {:crux.db/id (keyword (str "derpi/id" (:id r)))
-                     :description (:description r)
-                     :tags (:tags r)
-                     :source (:source_url r)
-                     :format (:format r)
-                     :mime-type (:mime_type r)}))
+       (mapv #(assoc % :crux.db/id (keyword (str "derpi/id" (:id %)))))
        (mapv (fn [r] [:crux.tx/put r]))
        (crux/submit-tx node))
   (crux/submit-tx node [[:crux.tx/put
-                         {:crux.db/id :derpi/last-page :page page}]]))
+                         {:crux.db/id (keyword (format "derpi/last-page/%s" query))
+                          :page page}]]))
 
 (defn download-page!
   [api-key query node image-directory page verbosity]
@@ -79,12 +78,12 @@
         images (-> result (get-in [:body :images]))]
     (if (not= (:status result) 200)
       (download-page! api-key query node image-directory page verbosity)
-      (if (empty? images)
+      (if (or (empty? images) (>= (* (dec page) 50) (get-in result [:body :total])))
         (clean-up node verbosity)
         (do
           (show-info verbosity 1 (format "Downloaded page %s." page))
           (download-image-batch! image-directory images verbosity)
-          (insert-to-database! node images page verbosity)
+          (insert-to-database! query node images page verbosity)
           (recur api-key query node image-directory (inc page) verbosity))))))
 
 (defn download-all!

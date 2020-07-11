@@ -12,7 +12,7 @@ supply is an API key which you can get
 [here](https://derpibooru.org/registration/edit):
 
 ```
-$ lein run -k YOUR_KEY_HERE
+$ lein run -- -k YOUR_KEY_HERE
 ```
 
 ### Specifying a data directory
@@ -21,7 +21,7 @@ By default, Mirror Pool saves data to a Crux database in `db/`, but you
 might prefer to use another directory:
 
 ```
-$ lein run -k YOUR_KEY_HERE -d data
+$ lein run -- -k YOUR_KEY_HERE -d data
 ```
 
 ### Specifying an image directory
@@ -30,7 +30,7 @@ By default, Mirror Pool saves images to `img/`, but you might prefer a
 different location:
 
 ```
-$ lein run -k YOUR_KEY_HERE -i ~/pictures/pony
+$ lein run -- -k YOUR_KEY_HERE -i ~/pictures/pony
 ```
 
 ### Specifying tags to download
@@ -39,7 +39,7 @@ As already mentioned, Mirror Pool defaults to downloading an entire copy
 of Derpibooru, but you might just want to get pictures of best pony:
 
 ```
-$ lein run -k YOUR_KEY_HERE -q "lightning dust"
+$ lein run -- -k YOUR_KEY_HERE -q "lightning dust"
 ```
 
 ### Getting more information
