@@ -12,7 +12,7 @@
     :id :verbosity
     :default 0
     :update-fn inc]
-   ["-d" "--database" "Database location"
+   ["-d" "--database DATABASE" "Database location"
     :id :database
     :default "db"]
    ["-i" "--image-directory IMAGE_DIRECTORY" "Directory to download images to"
@@ -31,8 +31,10 @@
 
 (defn -main [& args]
   (let [args (parse-opts args cli-options)]
-    (derpi/download-all! (:api-key (:options args))
-                         (:query (:options args))
-                         (:database (:options args))
-                         (:image-directory (:options args))
-                         (:verbosity (:options args)))))
+    (if (= true (:help (:options args)))
+      (println (:summary args))
+      (derpi/download-all! (:api-key (:options args))
+                           (:query (:options args))
+                           (:database (:options args))
+                           (:image-directory (:options args))
+                           (:verbosity (:options args))))))

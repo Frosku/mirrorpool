@@ -11,7 +11,8 @@
                  [danlentz/clj-uuid "0.1.9"]
                  [cheshire "5.10.0"]
                  [juxt/crux-core "20.06-1.9.1-beta"]
-                 [juxt/crux-lmdb "20.06-1.9.1-alpha"]]
+                 [juxt/crux-lmdb "20.06-1.9.1-alpha"]
+                 [com.fzakaria/slf4j-timbre "0.3.19"]]
   :main mirrorpool.core
   :aot :all
   :repl-options {:init-ns mirrorpool.core})

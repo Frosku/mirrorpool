@@ -5,7 +5,8 @@
             [clj-http.conn-mgr :as cm]
             [clj-uuid :as uuid]
             [clojure.string :as str]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io])
+  (:gen-class))
 
 (def ^:const api-base "https://derpibooru.org/api/v1/json/search/images")
 
@@ -28,7 +29,8 @@
 (defn get-image!
   [image image-directory verbosity]
   (show-info verbosity 2 (format "Downloading image %s." (:id image)))
-  (show-info verbosity 3 (format "Tagged with: " (str/join "," (:tags image))))
+  (show-info verbosity 3 (format "Tagged with: %s"
+                                 (str/join ", " (:tags image))))
   (with-open
     [in (io/input-stream (:full (:representations image)))
      out (io/output-stream
