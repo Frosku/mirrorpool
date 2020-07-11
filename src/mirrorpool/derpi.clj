@@ -10,6 +10,12 @@
 
 (def ^:const api-base "https://derpibooru.org/api/v1/json/search/images")
 
+(defn get-crux-node
+  [database]
+  (crux/start-node {:crux.node/topology '[crux.standalone/topology
+                                                  crux.kv.lmdb/kv-store]
+                            :crux.kv/db-dir (str (io/file database))}))
+
 (defn show-info
   [verbosity min-verbosity text]
   (if (>= verbosity min-verbosity)
@@ -23,7 +29,6 @@
                                       '{:find [id]
                                         :where [[e :crux.db/id id]]
                                         :full-results? true})))
-  (.close node)
   (System/exit 0))
 
 (defn get-image!
@@ -84,8 +89,9 @@
 
 (defn download-all!
   [api-key query database image-directory verbosity]
-  (let [node (crux/start-node
-              {:crux.node/topology '[crux.standalone/topology
-                                     crux.kv.lmdb/kv-store]
-               :crux.kv/db-dir (str (io/file database))})]
-    (download-page! api-key query node image-directory 1 verbosity)))
+  (download-page! api-key
+                  query
+                  (get-crux-node database)
+                  image-directory
+                  1
+                  verbosity))
