@@ -42,6 +42,16 @@ of Derpibooru, but you might just want to get pictures of best pony:
 $ lein run -- -k YOUR_KEY_HERE -q "lightning dust"
 ```
 
+### Restarting the mirror
+
+By default, Mirror Pool remembers which pages you have already downloaded,
+which allows for just downloading newer images and ignoring the ones you
+already have. If you need to restart your downloads from the first image:
+
+```
+$ lein run -- -k YOUR_KEY_HERE --restart
+```
+
 ### Getting more information
 
 There are several levels of verbosity available through `-v`, `-vv`, and
@@ -49,7 +59,7 @@ There are several levels of verbosity available through `-v`, `-vv`, and
 
 ## To Do
 
-- [ ] Support query instances with resume function (this is pretty important);
+- [x] Support query instances with resume function (this is pretty important);
 - [ ] Support back-ends which aren't Crux;
 - [ ] Make the uberjar work.
 

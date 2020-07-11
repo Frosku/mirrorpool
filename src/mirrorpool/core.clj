@@ -6,7 +6,7 @@
   (:gen-class))
 
 (def cli-options
-  [["-k" "--api-key KEY" "Api key to fetch with."
+  [["-k" "--api-key KEY" "Api key to fetch with"
     :id :api-key]
    ["-v" nil "Verbosity level"
     :id :verbosity
@@ -18,6 +18,7 @@
    ["-i" "--image-directory IMAGE_DIRECTORY" "Directory to download images to"
     :id :image-directory
     :default "img"]
+   ["-r" "--restart" "Always start at page 1, even if the query has been run before"]
    ["-q" "--query QUERY" "Tags to download"
     :id :query
     :default (str/join " OR " ["grotesque"
@@ -37,4 +38,5 @@
                            (:query (:options args))
                            (:database (:options args))
                            (:image-directory (:options args))
+                           (:restart (:options args))
                            (:verbosity (:options args))))))

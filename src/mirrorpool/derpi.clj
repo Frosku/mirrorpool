@@ -61,8 +61,15 @@
        (mapv (fn [r] [:crux.tx/put r]))
        (crux/submit-tx node))
   (crux/submit-tx node [[:crux.tx/put
-                         {:crux.db/id (keyword (format "derpi/last-page/%s" query))
+                         {:crux.db/id (keyword (format "derpi/last-page-%s" (hash query)))
                           :page page}]]))
+
+(defn get-last-page
+  [query node]
+  (first (first (crux/q (crux/db node) {:find '[p]
+                          :where '[[e :crux.db/id ?query-id]
+                                   [e :page p]]
+                          :args [{'?query-id (keyword (format "derpi/last-page-%s" (hash query)))}]}))))
 
 (defn download-page!
   [api-key query node image-directory page verbosity]
@@ -87,10 +94,7 @@
           (recur api-key query node image-directory (inc page) verbosity))))))
 
 (defn download-all!
-  [api-key query database image-directory verbosity]
-  (download-page! api-key
-                  query
-                  (get-crux-node database)
-                  image-directory
-                  1
-                  verbosity))
+  [api-key query database image-directory restart verbosity]
+  (let [node (get-crux-node database)
+        start-page (if (or restart (nil? (get-last-page query node))) 1 (get-last-page query node))]
+    (download-page! api-key query node image-directory start-page verbosity)))
