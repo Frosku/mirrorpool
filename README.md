@@ -47,6 +47,12 @@ $ lein run -k YOUR_KEY_HERE -q "lightning dust"
 There are several levels of verbosity available through `-v`, `-vv`, and
 `-vvv`. These are only recommended for debugging.
 
+## To Do
+
+- [ ] Support query instances with resume function (this is pretty important);
+- [ ] Support back-ends which aren't Crux;
+- [ ] Make the uberjar work.
+
 ## Why Mirror Pool?
 
 Unfortunately, no one is safe from Cancel Culture and our beloved archive
