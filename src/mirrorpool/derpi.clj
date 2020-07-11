@@ -19,26 +19,38 @@
                     :crux.standalone/event-log-sync? true
                     :crux.kv/sync? true}))
 
-(defn show-info
+(defn to-console
   [verbosity min-verbosity text]
   (if (>= verbosity min-verbosity)
-    (println (format "INFO: %s" text))
+    (println text)
     (do)))
+
+(defn show-message
+  [verbosity message]
+  (to-console verbosity 1 message))
+
+(defn show-info
+  [verbosity message]
+  (to-console verbosity 2 (format "INFO: %s" message)))
+
+(defn show-debug
+  [verbosity message]
+  (to-console verbosity 3 (format "DEBUG: %s" message)))
 
 (defn clean-up
   [node verbosity]
   (println "Finished processing images.")
-  (show-info verbosity 3 (str (crux/q (crux/db node)
-                                      '{:find [id]
-                                        :where [[e :crux.db/id id]]
-                                        :full-results? true})))
+  (show-debug verbosity (str (crux/q (crux/db node)
+                                     '{:find [id]
+                                       :where [[e :crux.db/id id]]
+                                       :full-results? true})))
   (System/exit 0))
 
 (defn get-image!
   [image image-directory verbosity]
-  (show-info verbosity 2 (format "Downloading image %s." (:id image)))
-  (show-info verbosity 3 (format "Tagged with: %s"
-                                 (str/join ", " (:tags image))))
+  (show-debug verbosity (format "Downloading image %s with tags: %s."
+                                (:id image)
+                                (str/join ", " (:tags image))))
   (with-open
     [in (io/input-stream (:full (:representations image)))
      out (io/output-stream
@@ -49,13 +61,13 @@
   [image-directory images verbosity]
   (loop [image (first images) images (next images)]
     (if (nil? image)
-      (show-info verbosity 1 "Finished downloading page.")
+      (show-info verbosity "Sucessfully downloaded images.")
       (do (get-image! image image-directory verbosity)
           (recur (first images) (next images))))))
 
 (defn insert-to-database!
   [query node images page verbosity]
-  (show-info verbosity 1 "Inserting images into Crux.")
+  (show-info verbosity "Inserting images into local data store.")
   (->> images
        (mapv #(assoc % :crux.db/id (keyword (str "derpi/id" (:id %)))))
        (mapv (fn [r] [:crux.tx/put r]))
@@ -88,7 +100,7 @@
       (if (or (empty? images) (>= (* (dec page) 50) (get-in result [:body :total])))
         (clean-up node verbosity)
         (do
-          (show-info verbosity 1 (format "Downloaded page %s." page))
+          (show-message verbosity (format "Working on page %s." page))
           (download-image-batch! image-directory images verbosity)
           (insert-to-database! query node images page verbosity)
           (recur api-key query node image-directory (inc page) verbosity))))))
