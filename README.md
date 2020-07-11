@@ -2,7 +2,7 @@
 
 ![](res/image.png)
 *Artwork by dm29 
-(source: [here](https://www.deviantart.com/dm29/art/Second-Starlight-829599000))
+(source: [here](https://www.deviantart.com/dm29/art/Second-Starlight-829599000)).*
 
 Mirror Pool is a command line script designed for use on any JVM-compliant
 platform, for downloading entire or partial clones of Derpibooru's image
