@@ -78,10 +78,12 @@
 
 (defn get-last-page
   [query node]
-  (first (first (crux/q (crux/db node) {:find '[p]
-                          :where '[[e :crux.db/id ?query-id]
-                                   [e :page p]]
-                          :args [{'?query-id (keyword (format "derpi/last-page-%s" (hash query)))}]}))))
+  (first (first (crux/q (crux/db node)
+                        {:find '[p]
+                         :where '[[e :crux.db/id ?query-id]
+                                  [e :page p]]
+                         :args [{'?query-id
+                                 (keyword (format "derpi/last-page-%s" (hash query)))}]}))))
 
 (defn download-page!
   [api-key query node image-directory page verbosity]
