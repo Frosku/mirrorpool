@@ -71,10 +71,13 @@
   (->> images
        (mapv #(assoc % :crux.db/id (keyword (str "derpi/id" (:id %)))))
        (mapv (fn [r] [:crux.tx/put r]))
-       (crux/submit-tx node))
-  (crux/submit-tx node [[:crux.tx/put
-                         {:crux.db/id (keyword (format "derpi/last-page-%s" (hash query)))
-                          :page page}]]))
+       (crux/submit-tx node)
+       (crux/await-tx node))
+  (crux/await-tx node (crux/submit-tx node
+                  [[:crux.tx/put
+                    {:crux.db/id
+                     (keyword (format "derpi/last-page-%s" (hash query)))
+                     :page page}]])))
 
 (defn get-last-page
   [query node]
