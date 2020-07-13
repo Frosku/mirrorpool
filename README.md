@@ -80,6 +80,7 @@ Thanks for the gesture, but I'm fine. If you feel an obligation to give
 back, please consider making a donation to one of the following free
 speech charities:
 
+- [The Comic Book Legal Defense Fund](http://cbldf.org/)
 - [Index on Censorship](https://www.indexoncensorship.org/)
 - [The Orwell Foundation](https://www.orwellfoundation.com/)
 - [The Cato Institute](https://www.cato.org)
